@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="http://moise.sourceforge.net/xml/os.xsl" type="text/xsl" ?>
+
+<organisational-specification
+    id="mac_project"
+    os-version="0.8"
+
+    xmlns='http://moise.sourceforge.net/os'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation='http://moise.sourceforge.net/os
+                        http://moise.sourceforge.net/xml/os.xsd' >
+
+<structural-specification>
+
+<role-definitions>
+    <role id="supervisor" />
+    <role id="client" />
+    <role id="providers" />
+    <role id="transporter">     <extends role="providers"/>  </role>
+    <role id="host">            <extends role="providers"/>  </role>
+</role-definitions>
+
+<group-specification id="toa_group">
+    <roles>
+        <role id="supervisor"    min="1" max="1"/>
+        <role id="client"        min="1" max="1"/>
+        <role id="transporter"   min="1" max="1" />
+        <role id="host"          min="1" max="1"/>
+    </roles>
+
+    <links>
+        <link from="supervisor" to="providers"  type="authority"     scope="intra-group" bi-dir="false"/>
+        <link from="providers"  to="supervisor" type="communication" scope="intra-group" bi-dir="false"/>
+        <link from="client"     to="supervisor" type="communication" scope="intra-group" bi-dir="false"/>
+    </links>
+    <formation-constraints>
+       <compatibility from="providers" to="providers" scope="intra-group"/>
+    </formation-constraints>
+</group-specification>
+</structural-specification>
+
+<functional-specification>
+    <scheme id="basic_package">
+        <goal id="basic_goal">
+            <plan operator="sequence">
+                <goal id="provideTransportServiceArrival"    ds="Airport to Accommodation"/>
+                <goal id="provideAccommService"/>
+                <goal id="provideTransportServiceDeparture" ds="Accommodation to Airport"/>
+            </plan>
+        </goal>
+        <mission id="complete_basic_package" min="1" max="1">
+            <goal id="basic_goal"/>
+        </mission>
+        <mission id="transport_mission_arrival" min="1" max="1">
+            <goal id="provideTransportServiceArrival"/>
+        </mission>
+        <mission id="transport_mission_departure" min="1" max="1">
+            <goal id="provideTransportServiceDeparture"/>
+        </mission>
+        <mission id="accommodation_mission" min="1" max="1">
+            <goal id="provideAccommService"/>
+        </mission>
+    </scheme>
+</functional-specification>
+
+<normative-specification>
+    <norm id="norm1" type="obligation" role="supervisor"  mission="complete_basic_package"    time-constraint="2 minutes" />
+    <norm id="norm2" type="obligation" role="transporter" mission="transport_mission_arrival"/>
+    <norm id="norm3" type="obligation" role="transporter" mission="transport_mission_departure"/>
+    <norm id="norm4" type="obligation" role="host"        mission="accommodation_mission"/>
+</normative-specification>
+
+</organisational-specification>
